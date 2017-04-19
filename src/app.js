@@ -16,10 +16,19 @@ var Recipes = React.createClass({
         return(
             <div>
                 <h1>Recipe Box</h1>
+                <AddRecipe onAdd={this.onAdd} />
                 <RecipeCard recipes={this.state.recipes} />
             </div>
         );
     }, // render
+
+    onAdd: function(recipe) {
+        var updatedRecipes = this.state.recipes;
+        updatedRecipes.push(recipe);
+        this.setState({
+            recipes: updatedRecipes
+        })
+    }, // onAdd
 });
 
 var RecipeCard = React.createClass({
@@ -37,6 +46,31 @@ var RecipeCard = React.createClass({
             </div>
         )
     }, // render
+})
+
+var AddRecipe = React.createClass({
+    render: function() {
+        return(
+            <form id="add-recipe" onSubmit={this.handleSubmit}>
+                <input type="text" placeholder="Name" required ref="newName" />
+                <input type="text" placeholder="Ingredients (CSV)" required ref="newIngredients" />
+                <input type="submit" value="Yum!" />
+            </form>
+        )
+    }, // render
+
+    handleSubmit: function(e) {
+        e.preventDefault();
+
+        var newRecipe = {
+            name: this.refs.newName.value,
+            ingredients: this.refs.newIngredients.value.split(',')
+        }
+        this.props.onAdd(newRecipe);
+
+        this.refs.newName.value = "";
+        this.refs.newIngredients.value = "";
+    } // handleSubmit
 })
 
 ReactDOM.render(<Recipes />, document.getElementById('root'));
