@@ -5,12 +5,18 @@ require('./style.css');
 
 var Recipes = React.createClass({
     getInitialState: function() {
-        return {
-                recipes: [
-                    {name: "grilled cheese", ingredients: ["bread", "american cheese"]},
-                    {name: "quesadilla", ingredients: ["tortilla", "cheese"]}
-                ]
-        };
+        const seed = [{
+            name: "grilled cheese",
+            ingredients: ["bread", "american cheese"]
+        },
+        {
+            name: "quesadilla",
+            ingredients: ["tortilla", "cheese"]
+        }
+        ];
+
+        const data = JSON.parse(localStorage.getItem('state')) || seed;
+        return {recipes: data}
     }, // getInitialState
     render: function() {
         return(
@@ -25,6 +31,7 @@ var Recipes = React.createClass({
     onAdd: function(recipe) {
         var updatedRecipes = this.state.recipes;
         updatedRecipes.push(recipe);
+        localStorage.setItem('state', JSON.stringify(updatedRecipes));
         this.setState({
             recipes: updatedRecipes
         })
