@@ -23,7 +23,7 @@ var Recipes = React.createClass({
             <div>
                 <h1>Recipe Box</h1>
                 <AddRecipe onAdd={this.onAdd} />
-                <RecipeCard recipes={this.state.recipes} />
+                <RecipeCard recipes={this.state.recipes} onDelete={this.onDelete} />
             </div>
         );
     }, // render
@@ -36,6 +36,16 @@ var Recipes = React.createClass({
             recipes: updatedRecipes
         })
     }, // onAdd
+
+    onDelete: function(clickedIndex) {
+        var updatedRecipes = this.state.recipes.filter(function(el, index){
+            return index !== clickedIndex;
+        });
+        localStorage.setItem('state', JSON.stringify(updatedRecipes));        
+        this.setState({
+            recipes: updatedRecipes
+        });
+    }
 });
 
 var RecipeCard = React.createClass({
@@ -45,14 +55,18 @@ var RecipeCard = React.createClass({
                 {this.props.recipes.map(function(recipe, index){
                     return(
                         <div className="card" key={index}>
+                            <span onClick={this.handleDelete.bind(this, index)}>X</span>
                             <h3>{recipe.name.toUpperCase()}</h3>
                             <p>{recipe.ingredients.join(', ')}</p>
                         </div>
                     )
-                })}
+                }.bind(this))}
             </div>
         )
     }, // render
+    handleDelete: function(clickedIndex) {
+        this.props.onDelete(clickedIndex);
+    }
 })
 
 var AddRecipe = React.createClass({
