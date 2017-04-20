@@ -8,12 +8,14 @@ var Recipes = React.createClass({
         const seed = [{
             name: "grilled cheese",
             ingredients: ["bread", "american cheese"],
-            editing: false
+            editing: false,
+            expand: false
         },
         {
             name: "quesadilla",
             ingredients: ["tortilla", "cheese"],
-            editing: false
+            editing: false,
+            expand: false
         }
         ];
 
@@ -25,10 +27,19 @@ var Recipes = React.createClass({
             <div>
                 <h1>Recipe Box</h1>
                 <AddRecipe onAdd={this.onAdd} />
-                <RecipeCard recipes={this.state.recipes} onEdit={this.onEdit} onUpdate={this.onUpdate} onDelete={this.onDelete} />
+                <RecipeCard recipes={this.state.recipes} toggleExpand={this.toggleExpand} onEdit={this.onEdit} onUpdate={this.onUpdate} onDelete={this.onDelete} />
             </div>
         );
     }, // render
+
+    toggleExpand: function(clickedIndex) {
+        var updatedRecipes = this.state.recipes;
+        var currentState = updatedRecipes[clickedIndex].expand;
+        updatedRecipes[clickedIndex].expand = !currentState;
+        this.setState({
+            recipes: updatedRecipes
+        })
+    }, // toggleExpand
 
     onAdd: function(recipe) {
         var updatedRecipes = this.state.recipes;
@@ -74,18 +85,25 @@ var RecipeCard = React.createClass({
         if (recipe.editing === true) {
             return(
             <form id="edit-recipe" className="card" onSubmit={this.handleUpdate.bind(this, index)}>
-                <input type="text" placeholder={recipe.name} required ref="updatedName" />
-                <input type="text" placeholder={recipe.ingredients} required ref="updatedIngredients" />
+                <input type="text" defaultValue={recipe.name} required ref="updatedName" />
+                <input type="text" defaultValue={recipe.ingredients} required ref="updatedIngredients" />
                 <input type="submit" value="Update" />
             </form>
             )
         } else {
             return(
-            <div onDoubleClick={this.handleEdit.bind(this, index)}>
-                <span onClick={this.handleDelete.bind(this, index)}>X</span>
+            <div className="card-content" onDoubleClick={this.handleEdit.bind(this, index)}>
                 <h3>{recipe.name.toUpperCase()}</h3>
-                <p>{recipe.ingredients.join(', ')}</p>
+                <span className="delete" onClick={this.handleDelete.bind(this, index)}>X</span>
+                {this.toggleExpand(recipe)}
             </div>
+            )
+        }
+    },
+    toggleExpand: function(recipe) {
+        if (recipe.expand === true) {
+            return(
+                <p>{recipe.ingredients.join(', ')}</p>
             )
         }
     },
@@ -94,7 +112,7 @@ var RecipeCard = React.createClass({
                 <div>
                     {this.props.recipes.map(function(recipe, index){
                         return(
-                            <div className="card" key={index}>
+                            <div className="card" onClick={this.handleClick.bind(this, index)} key={index}>
                                 {this.displayOrEdit(recipe, index)}
                             </div>
                         )
@@ -102,6 +120,9 @@ var RecipeCard = React.createClass({
                 </div>
             )
     }, // render
+    handleClick: function(clickedIndex) {
+        this.props.toggleExpand(clickedIndex);
+    },
     handleEdit: function(clickedIndex) {
         this.props.onEdit(clickedIndex);
     },
