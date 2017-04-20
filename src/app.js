@@ -7,11 +7,13 @@ var Recipes = React.createClass({
     getInitialState: function() {
         const seed = [{
             name: "grilled cheese",
-            ingredients: ["bread", "american cheese"]
+            ingredients: ["bread", "american cheese"],
+            editing: false
         },
         {
             name: "quesadilla",
-            ingredients: ["tortilla", "cheese"]
+            ingredients: ["tortilla", "cheese"],
+            editing: false
         }
         ];
 
@@ -23,7 +25,7 @@ var Recipes = React.createClass({
             <div>
                 <h1>Recipe Box</h1>
                 <AddRecipe onAdd={this.onAdd} />
-                <RecipeCard recipes={this.state.recipes} onDelete={this.onDelete} />
+                <RecipeCard recipes={this.state.recipes} onEdit={this.onEdit} onUpdate={this.onUpdate} onDelete={this.onDelete} />
             </div>
         );
     }, // render
@@ -37,6 +39,19 @@ var Recipes = React.createClass({
         })
     }, // onAdd
 
+    onEdit: function(clickedIndex) {
+        var updatedRecipes = this.state.recipes;
+
+        updatedRecipes[clickedIndex].editing = true;
+        this.setState({
+            recipes: updatedRecipes
+        })
+    }, // onEdit
+
+    onUpdate: function(recipe){
+        console.log(recipe)
+    }, // onUpdate
+
     onDelete: function(clickedIndex) {
         var updatedRecipes = this.state.recipes.filter(function(el, index){
             return index !== clickedIndex;
@@ -49,23 +64,53 @@ var Recipes = React.createClass({
 });
 
 var RecipeCard = React.createClass({
-    render: function() {
-        return(
-            <div>
-                {this.props.recipes.map(function(recipe, index){
-                    return(
-                        <div className="card" key={index}>
-                            <span onClick={this.handleDelete.bind(this, index)}>X</span>
-                            <h3>{recipe.name.toUpperCase()}</h3>
-                            <p>{recipe.ingredients.join(', ')}</p>
-                        </div>
-                    )
-                }.bind(this))}
+    displayOrEdit: function(recipe, index) {
+        if (recipe.editing === true) {
+            return(
+            <form id="edit-recipe" className="card" onSubmit={this.handleUpdate}>
+                <input type="text" placeholder={recipe.name} required ref="updatedName" />
+                <input type="text" placeholder={recipe.ingredients} required ref="updatedIngredients" />
+                <input type="submit" value="Update" />
+            </form>
+            )
+        } else {
+            return(
+            <div onDoubleClick={this.handleEdit.bind(this, index)}>
+                <span onClick={this.handleDelete.bind(this, index)}>X</span>
+                <h3>{recipe.name.toUpperCase()}</h3>
+                <p>{recipe.ingredients.join(', ')}</p>
             </div>
-        )
+            )
+        }
+    },
+    render: function() {
+            return(
+                <div>
+                    {this.props.recipes.map(function(recipe, index){
+                        return(
+                            <div className="card" key={index}>
+                                {this.displayOrEdit(recipe, index)}
+                            </div>
+                        )
+                    }.bind(this))}
+                </div>
+            )
     }, // render
+    handleEdit: function(clickedIndex) {
+        this.props.onEdit(clickedIndex);
+    },
     handleDelete: function(clickedIndex) {
         this.props.onDelete(clickedIndex);
+    },
+    handleUpdate: function(e) {
+        e.preventDefault();
+
+        var updatedRecipe = {
+            name: this.refs.updatedName.value,
+            ingredients: this.refs.updatedIngredients.value.split(',')
+        }
+
+        this.props.onUpdate(updatedRecipe);
     }
 })
 
