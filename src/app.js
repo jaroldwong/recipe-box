@@ -93,8 +93,8 @@ var RecipeCard = React.createClass({
         } else {
             return(
             <div className="card-content" onDoubleClick={this.handleEdit.bind(this, index)}>
-                <h3>{recipe.name.toUpperCase()}</h3>
                 <span className="delete" onClick={this.handleDelete.bind(this, index)}>X</span>
+                <h3>{recipe.name.toUpperCase()}</h3>
                 {this.toggleExpand(recipe)}
             </div>
             )
@@ -130,7 +130,6 @@ var RecipeCard = React.createClass({
         this.props.onDelete(clickedIndex);
     },
     handleUpdate: function(i, e) {
-        debugger;
         e.preventDefault();
 
         var updatedRecipe = {
