@@ -48,8 +48,14 @@ var Recipes = React.createClass({
         })
     }, // onEdit
 
-    onUpdate: function(recipe){
-        console.log(recipe)
+    onUpdate: function(recipe, i){
+        var updatedRecipes = this.state.recipes;
+
+        updatedRecipes[i] = recipe;
+        localStorage.setItem('state', JSON.stringify(updatedRecipes));        
+        this.setState({
+            recipes: updatedRecipes
+        });
     }, // onUpdate
 
     onDelete: function(clickedIndex) {
@@ -67,7 +73,7 @@ var RecipeCard = React.createClass({
     displayOrEdit: function(recipe, index) {
         if (recipe.editing === true) {
             return(
-            <form id="edit-recipe" className="card" onSubmit={this.handleUpdate}>
+            <form id="edit-recipe" className="card" onSubmit={this.handleUpdate.bind(this, index)}>
                 <input type="text" placeholder={recipe.name} required ref="updatedName" />
                 <input type="text" placeholder={recipe.ingredients} required ref="updatedIngredients" />
                 <input type="submit" value="Update" />
@@ -102,7 +108,8 @@ var RecipeCard = React.createClass({
     handleDelete: function(clickedIndex) {
         this.props.onDelete(clickedIndex);
     },
-    handleUpdate: function(e) {
+    handleUpdate: function(i, e) {
+        debugger;
         e.preventDefault();
 
         var updatedRecipe = {
@@ -110,7 +117,7 @@ var RecipeCard = React.createClass({
             ingredients: this.refs.updatedIngredients.value.split(',')
         }
 
-        this.props.onUpdate(updatedRecipe);
+        this.props.onUpdate(updatedRecipe, i);
     }
 })
 
