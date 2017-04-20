@@ -94,7 +94,7 @@ var RecipeCard = React.createClass({
             return(
             <div className="card-content" onDoubleClick={this.handleEdit.bind(this, index)}>
                 <span className="delete" onClick={this.handleDelete.bind(this, index)}>X</span>
-                <h3>{recipe.name.toUpperCase()}</h3>
+                <h3 onClick={this.handleClick.bind(this, index)}>{recipe.name.toUpperCase()}</h3>
                 {this.toggleExpand(recipe)}
             </div>
             )
@@ -112,7 +112,7 @@ var RecipeCard = React.createClass({
                 <div>
                     {this.props.recipes.map(function(recipe, index){
                         return(
-                            <div className="card" onClick={this.handleClick.bind(this, index)} key={index}>
+                            <div className="card" key={index}>
                                 {this.displayOrEdit(recipe, index)}
                             </div>
                         )
